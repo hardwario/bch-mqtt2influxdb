@@ -1,0 +1,49 @@
+#!/bin/sh
+# vim: set ts=4:
+# Environment variables:
+# 	PKG_VERSION : Version of the resulting packages in Debian format (!).
+# 	              If not specified, then it's determined from git base on tags.
+
+set -eu
+
+cd "$(dirname "$0")/.."
+. script/utils.sh
+. ./.envrc
+
+if [ -z "${PKG_VERSION:-}" ]; then
+	PKG_VERSION="$(pkgver_from_git)" ||
+		die '$PKG_VERSION is not set and could not determine version from git!'
+fi
+
+replace_placeholders() {
+	# Tilde as a suffix separator is used only for Debian packages...
+	local ver="$(echo $PKG_VERSION | tr '~' '-')"
+
+	sed_inplace "s/@@VERSION@@/$ver/g" "$1"
+}
+
+build_pip() {
+	einfo 'Building'
+
+    if [ -z "${TRAVIS_BUILD_DIR:-}" ]; then
+        BUILD_DIR="$(pwd)/build"
+        echo "$BUILD_DIR"
+        mkdir -p "$BUILD_DIR"
+        cp -r mqtt2influxdb "$BUILD_DIR"/mqtt2influxdb
+        cp setup.py "$BUILD_DIR"/
+        cd "$BUILD_DIR"
+    fi
+
+    chmod +x mqtt2influxdb/cli.py
+
+	replace_placeholders mqtt2influxdb/cli.py
+    replace_placeholders setup.py
+
+    python3 setup.py sdist
+}
+
+#----------  M a i n  ----------#
+
+build_pip
+
+# rm -Rf "$BUILD_DIR"
