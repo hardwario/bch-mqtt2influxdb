@@ -1,3 +1,4 @@
+PyYAML>=3.11
 paho-mqtt>=1.0
 influxdb
 schema>=0.6.7

@@ -3,7 +3,7 @@
 
 from setuptools import setup, find_packages
 
-requirements = ['paho-mqtt>=1.0', 'influxdb', 'schema>=0.6.7', 'jsonpath-ng>=1.4.3']
+requirements = ['PyYAML>=3.11', 'paho-mqtt>=1.0', 'influxdb', 'schema>=0.6.7', 'jsonpath-ng>=1.4.3']
 
 setup(
     name='mqtt2influxdb',
@@ -33,6 +33,6 @@ setup(
         mqtt2influxdb=mqtt2influxdb.cli:main
     ''',
     long_description='''
-BigClown Firmware Tool.
+BigClown tool for storage data from MQTT to InfluxDB
 '''
 )
