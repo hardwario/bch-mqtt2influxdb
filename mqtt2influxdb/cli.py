@@ -26,6 +26,7 @@ def main():
         config = load_config(args.config)
 
         if args.test:
+            print("The configuration file seems ok")
             return
 
         Mqtt2InfluxDB(config)
