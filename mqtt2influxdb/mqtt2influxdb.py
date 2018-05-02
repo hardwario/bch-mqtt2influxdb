@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-import os
 import sys
 import logging
 import json
@@ -109,7 +108,7 @@ class Mqtt2InfluxDB:
 
                 if 'fields' in point:
                     for key in point['fields']:
-                        val = self._get_value_from_str_or_JSONPath(point['fields'][key], msg)
+                        val = self._get_value_from_str_or_JSONPath(jsonpath_ng.parse(point['fields'][key]), msg)
                         if val is None:
                             continue
                         record['fields'][key] = val
@@ -123,7 +122,7 @@ class Mqtt2InfluxDB:
 
                 if 'tags' in point:
                     for key in point['tags']:
-                        val = self._get_value_from_str_or_JSONPath(point['tags'][key], msg)
+                        val = self._get_value_from_str_or_JSONPath(jsonpath_ng.parse(point['tags'][key]), msg)
                         if val is None:
                             continue
                         record['tags'][key] = val
