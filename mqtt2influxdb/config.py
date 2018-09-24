@@ -46,7 +46,7 @@ schema = Schema({
     'points': [{
         'measurement': And(str, len, Use(str_or_jsonPath)),
         'topic': And(str, len),
-        Optional('fields'): {str: And(str, len, Use(str_or_jsonPath))},
+        Optional('fields'): Or({str: And(str, len, Use(str_or_jsonPath))}, And(str, len, Use(str_or_jsonPath))),
         Optional('tags'): {str: And(str, len, Use(str_or_jsonPath))},
         Optional('database'): And(str, len)
     }]

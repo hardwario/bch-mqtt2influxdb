@@ -108,18 +108,21 @@ class Mqtt2InfluxDB:
                           'fields': {}}
 
                 if 'fields' in point:
-                    for key in point['fields']:
-                        val = self._get_value_from_str_or_JSONPath(point['fields'][key], msg)
-                        if val is None:
-                            continue
-                        record['fields'][key] = val
+                    if isinstance(point['fields'], jsonpath_ng.JSONPath):
+                        record['fields'] = self._get_value_from_str_or_JSONPath(point['fields'], msg)
+                    else:
+                        for key in point['fields']:
+                            val = self._get_value_from_str_or_JSONPath(point['fields'][key], msg)
+                            if val is None:
+                                continue
+                            record['fields'][key] = val
+
+                        if len(record['fields']) != len(point['fields']):
+                            logging.warning('different number of fields')
 
                 if not record['fields']:
                     logging.warning('empty fields')
                     return
-
-                if len(record['fields']) != len(point['fields']):
-                    logging.warning('different number of fields')
 
                 if 'tags' in point:
                     for key in point['tags']:
