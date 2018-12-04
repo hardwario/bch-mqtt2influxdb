@@ -4,7 +4,7 @@ import os
 import sys
 import argparse
 import logging
-import yaml
+from time import sleep
 from .config import load_config
 from .mqtt2influxdb import Mqtt2InfluxDB
 
@@ -17,6 +17,7 @@ def main():
     argp.add_argument('-c', '--config', help='path to configuration file (YAML format)', required=True)
     argp.add_argument('-D', '--debug', help='print debug messages', action='store_true')
     argp.add_argument('-t', '--test', help='test parse config', action='store_true')
+    argp.add_argument('-d', '--daemon', help='on connection error instead of exiting just wait for some time and try again', action='store_true')
     argp.add_argument('-v', '--version', action='version', version='%(prog)s ' + __version__)
     args = argp.parse_args()
 
@@ -29,10 +30,16 @@ def main():
             print("The configuration file seems ok")
             return
 
-        Mqtt2InfluxDB(config)
-
-    except KeyboardInterrupt as e:
-        return
+        try:
+            Mqtt2InfluxDB(config)
+        except KeyboardInterrupt:
+            return
+        except Exception as e:
+            if not args.daemon:
+                raise
+            logging.error(e)
+            logging.info('Suspending for 30 seconds')
+            sleep(30)
     except Exception as e:
         logging.error(e)
         if os.getenv('DEBUG', False):
