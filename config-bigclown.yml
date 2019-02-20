@@ -59,3 +59,17 @@ points:
     tags:
       id: $.topic[1]
       channel: $.topic[3]
+
+  - measurement: tvoc
+    topic: node/+/voc-lp-sensor/0:0/tvoc
+    fields:
+      value: $.payload
+    tags:
+      id: $.topic[1]
+
+  - measurement: tvoc
+    topic: node/+/voc-sensor/0:0/tvoc
+    fields:
+      value: $.payload
+    tags:
+      id: $.topic[1]
