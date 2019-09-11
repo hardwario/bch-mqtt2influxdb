@@ -53,7 +53,7 @@ schema = Schema({
     Optional("base64decode"): {
         'source': And(str, len, Use(str_or_jsonPath)),
         'target': And(str, len)
-        },
+    },
     'points': [{
         'measurement': And(str, len, Use(str_or_jsonPath)),
         'topic': And(str, len),
