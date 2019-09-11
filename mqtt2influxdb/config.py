@@ -35,6 +35,13 @@ schema = Schema({
         Optional('certfile'): os.path.exists,
         Optional('keyfile'): os.path.exists,
     },
+    Optional('http'): {
+        'destination': And(str, len),
+        'action': And(str, len),
+        Optional('username'): And(str, len),
+        Optional('password'): And(str, len)
+    },
+
     'influxdb': {
         'host': And(str, len),
         'port': And(int, port_range),
@@ -43,9 +50,14 @@ schema = Schema({
         'database': And(str, len),
         Optional('ssl'): bool
     },
+    Optional("base64decode"): {
+        'source': And(str, len, Use(str_or_jsonPath)),
+        'target': And(str, len)
+    },
     'points': [{
         'measurement': And(str, len, Use(str_or_jsonPath)),
         'topic': And(str, len),
+        Optional('httpcontent'): {str: And(str, len, Use(str_or_jsonPath))},
         Optional('fields'): Or({str: And(str, len, Use(str_or_jsonPath))}, And(str, len, Use(str_or_jsonPath))),
         Optional('tags'): {str: And(str, len, Use(str_or_jsonPath))},
         Optional('database'): And(str, len)
@@ -55,7 +67,7 @@ schema = Schema({
 
 def load_config(config_filename):
     with open(config_filename, 'r') as f:
-        config = yaml.load(f)
+        config = yaml.load(f, Loader=yaml.FullLoader)
         try:
             return schema.validate(config)
         except SchemaError as e:
