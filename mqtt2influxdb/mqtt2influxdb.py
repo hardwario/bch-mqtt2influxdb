@@ -111,7 +111,7 @@ class Mqtt2InfluxDB:
                           'time': datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ'),
                           'tags': {},
                           'fields': {}}
-                if 'base64decode' in self._config.keys():
+                if 'base64decode' in self._config:
                     data = self._get_value_from_str_or_JSONPath(self._config['base64decode']["source"], msg)
                     dataDecoded = base64.b64decode(data)
                     msg.update({"base64decoded": {self._config['base64decode']["target"]: {"raw": dataDecoded}}})
@@ -149,7 +149,7 @@ class Mqtt2InfluxDB:
 
                 self._influxdb.write_points([record], database=point.get('database', None))
 
-                if 'http' in self._config.keys():
+                if 'http' in self._config:
                     http_record = {}
                     for key in point['httpcontent']:
                         val = self._get_value_from_str_or_JSONPath(point['httpcontent'][key], msg)

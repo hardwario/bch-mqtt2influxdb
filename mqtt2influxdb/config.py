@@ -39,7 +39,7 @@ schema = Schema({
         'destination': And(str, len),
         'action': And(str, len),
         Optional('username'): And(str, len),
-        Optional('password'): And(str, len),
+        Optional('password'): And(str, len)
     },
 
     'influxdb': {
@@ -50,7 +50,10 @@ schema = Schema({
         'database': And(str, len),
         Optional('ssl'): bool
     },
-    Optional("base64decode"): {str: And(str, len, Use(str_or_jsonPath))},
+    Optional("base64decode"): {
+        'source': And(str, len, Use(str_or_jsonPath)),
+        'target': And(str, len)
+        },
     'points': [{
         'measurement': And(str, len, Use(str_or_jsonPath)),
         'topic': And(str, len),
