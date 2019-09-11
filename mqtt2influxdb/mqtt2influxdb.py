@@ -114,9 +114,9 @@ class Mqtt2InfluxDB:
                 if 'base64decode' in self._config.keys():
                     data = self._get_value_from_str_or_JSONPath(self._config['base64decode']["source"], msg)
                     dataDecoded = base64.b64decode(data)
-                    msg.update({"base64decoded": {self._config['base64decode']["target"]: {"raw": dataDecoded }}})
+                    msg.update({"base64decoded": {self._config['base64decode']["target"]: {"raw": dataDecoded}}})
                     dataDecoded = dataDecoded.hex()
-                    msg.update({"base64decoded": {self._config['base64decode']["target"]: {"hex": dataDecoded }}})
+                    msg.update({"base64decoded": {self._config['base64decode']["target"]: {"hex": dataDecoded}}})
 
                 if 'fields' in point:
                     if isinstance(point['fields'], jsonpath_ng.JSONPath):
@@ -155,14 +155,13 @@ class Mqtt2InfluxDB:
                         val = self._get_value_from_str_or_JSONPath(point['httpcontent'][key], msg)
                         if val is None:
                             continue
-                        http_record.update({key:val})
+                        http_record.update({key: val})
 
                     action = getattr(requests, self._config['http']['action'], None)
                     if action:
-                        r = action(url = self._config['http']['destination'], data = http_record, auth = HTTPBasicAuth(self._config['http']['username'], self._config['http']['password']))
+                        r = action(url=self._config['http']['destination'], data=http_record, auth=HTTPBasicAuth(self._config['http']['username'], self._config['http']['password']))
                     else:
                         print("Invalid HTTP method key!")
-
 
     def _get_value_from_str_or_JSONPath(self, param, msg):
         if isinstance(param, str):

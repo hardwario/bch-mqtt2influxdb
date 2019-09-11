@@ -41,7 +41,7 @@ schema = Schema({
         Optional('username'): And(str, len),
         Optional('password'): And(str, len),
     },
-    
+
     'influxdb': {
         'host': And(str, len),
         'port': And(int, port_range),
