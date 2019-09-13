@@ -58,7 +58,7 @@ schema = Schema({
         'measurement': And(str, len, Use(str_or_jsonPath)),
         'topic': And(str, len),
         Optional('httpcontent'): {str: And(str, len, Use(str_or_jsonPath))},
-        Optional('fields'): Or({str: And(str, len, Use(str_or_jsonPath))}, And(str, len, Use(str_or_jsonPath))),
+        Optional('fields'): Or({str: Or(And(str, len, Use(str_or_jsonPath)), {'value': And(str, len, Use(str_or_jsonPath)),'type': And(str, len)})}, And(str, len, Use(str_or_jsonPath))),
         Optional('tags'): {str: And(str, len, Use(str_or_jsonPath))},
         Optional('database'): And(str, len)
     }]
