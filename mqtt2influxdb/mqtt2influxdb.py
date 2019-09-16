@@ -130,11 +130,11 @@ class Mqtt2InfluxDB:
                         for key in point['fields']:
                             if isinstance(point['fields'][key], dict):
                                 val = self._get_value_from_str_or_JSONPath(point['fields'][key]['value'], msg)
-                                convFunc = getattr(builtins, point['fields'][key]['type'], None) 
+                                convFunc = getattr(builtins, point['fields'][key]['type'], None)
                                 if convFunc:
                                     try:
                                         val = convFunc(val)
-                                    except:
+                                    except ValueError:
                                         val = None
                                         logging.warning('invalid conversion function key')
                             else:
