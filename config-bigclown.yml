@@ -7,14 +7,32 @@ influxdb:
   port: 8086
   database: node
 
+http:
+  destination: https://example.com/content
+  action: post
+  username: username
+  password: password
+
+base64decode:
+  source: $.payload.data
+  target: data
+
 points:
   - measurement: temperature
+    database: my_database
     topic: node/+/thermometer/+/temperature
     fields:
-      value: $.payload
+      value: $.payload.data
+      decodedvalue: $.base64decoded.data.hex
+      foo: 
+        value: $.payload.foo
+        type: "float"
     tags:
       id: $.topic[1]
       channel: $.topic[3]
+    httpcontent:
+      frame: $.base64decoded.data.hex
+      skipBytes: "1"
 
   - measurement: relative-humidity
     topic: node/+/hygrometer/+/relative-humidity
