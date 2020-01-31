@@ -13,6 +13,7 @@ import requests
 import base64
 from requests.auth import HTTPBasicAuth
 import http.client as http_client
+import builtins
 
 
 class Mqtt2InfluxDB:
@@ -84,6 +85,7 @@ class Mqtt2InfluxDB:
         msg = None
 
         for point in self._points:
+
             if topic_matches_sub(point['topic'], message.topic):
                 if not msg:
                     payload = message.payload.decode('utf-8')
@@ -111,6 +113,7 @@ class Mqtt2InfluxDB:
                           'time': datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ'),
                           'tags': {},
                           'fields': {}}
+
                 if 'base64decode' in self._config:
                     data = self._get_value_from_str_or_JSONPath(self._config['base64decode']["source"], msg)
                     dataDecoded = base64.b64decode(data)
@@ -119,15 +122,26 @@ class Mqtt2InfluxDB:
                     msg.update({"base64decoded": {self._config['base64decode']["target"]: {"hex": dataDecoded}}})
 
                 if 'fields' in point:
+
                     if isinstance(point['fields'], jsonpath_ng.JSONPath):
                         record['fields'] = self._get_value_from_str_or_JSONPath(point['fields'], msg)
+
                     else:
                         for key in point['fields']:
-                            val = self._get_value_from_str_or_JSONPath(point['fields'][key], msg)
+                            if isinstance(point['fields'][key], dict):
+                                val = self._get_value_from_str_or_JSONPath(point['fields'][key]['value'], msg)
+                                convFunc = getattr(builtins, point['fields'][key]['type'], None)
+                                if convFunc:
+                                    try:
+                                        val = convFunc(val)
+                                    except ValueError:
+                                        val = None
+                                        logging.warning('invalid conversion function key')
+                            else:
+                                val = self._get_value_from_str_or_JSONPath(point['fields'][key], msg)
                             if val is None:
                                 continue
                             record['fields'][key] = val
-
                         if len(record['fields']) != len(point['fields']):
                             logging.warning('different number of fields')
 
