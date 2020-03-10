@@ -1,11 +1,11 @@
-<a href="https://www.bigclown.com/"><img src="https://bigclown.sirv.com/logo.png" width="200" alt="BigClown Logo" align="right"></a>
+<a href="https://www.hardwario.com/"><img src="https://www.hardwario.com/ci/assets/hw-logo.svg" width="200" alt="HARDWARIO Logo" align="right"></a>
 
 # MQTT to InfluxDB
 
 [![Travis](https://img.shields.io/travis/bigclownlabs/bch-mqtt2influxdb/master.svg)](https://travis-ci.org/bigclownlabs/bch-mqtt2influxdb)
 [![Release](https://img.shields.io/github/release/bigclownlabs/bch-mqtt2influxdb.svg)](https://github.com/bigclownlabs/bch-mqtt2influxdb/releases)
 [![License](https://img.shields.io/github/license/bigclownlabs/bch-mqtt2influxdb.svg)](https://github.com/bigclownlabs/bch-mqtt2influxdb/blob/master/LICENSE)
-[![Twitter](https://img.shields.io/twitter/follow/BigClownLabs.svg?style=social&label=Follow)](https://twitter.com/BigClownLabs)
+[![Twitter](https://img.shields.io/twitter/follow/hardwario_en.svg?style=social&label=Follow)](https://twitter.com/hardwario_en)
 
 
 ## Example
