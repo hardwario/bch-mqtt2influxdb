@@ -11,20 +11,21 @@ import re
 
 
 # Regex for schedule config entries
-validate_crontab_time_format_regex = re.compile(\
-        "{0}\s+{1}\s+{2}\s+{3}\s+{4}".format(\
-            "(?P<minute>\*|[0-5]?\d)",\
-            "(?P<hour>\*|[01]?\d|2[0-3])",\
-            "(?P<day>\*|0?[1-9]|[12]\d|3[01])",\
-            "(?P<month>\*|0?[1-9]|1[012])",\
-            "(?P<day_of_week>\*|[0-6](\-[0-6])?)"\
-        ) # end of str.format()
-    ) # end of re.compile()
+validate_crontab_time_format_regex = re.compile(
+        r"{0}\s+{1}\s+{2}\s+{3}\s+{4}".format(
+            r"(?P<minute>\*|[0-5]?\d)",
+            r"(?P<hour>\*|[01]?\d|2[0-3])",
+            r"(?P<day>\*|0?[1-9]|[12]\d|3[01])",
+            r"(?P<month>\*|0?[1-9]|1[012])",
+            r"(?P<day_of_week>\*|[0-6](\-[0-6])?)"
+        )  # end of str.format()
+    )  # end of re.compile()
+
 
 def json_path(txt):
     try:
         return jsonpath_ng.parse(txt)
-    except Exception as e:
+    except Exception:
         raise SchemaError('Bad JsonPath format: %s' % txt)
 
 
@@ -33,15 +34,18 @@ def str_or_jsonPath(txt):
         return json_path(txt)
     return txt
 
+
 def str_or_jsonPath_or_expr(txt):
     if '=' in txt:
         return parse_expression(txt)
     return str_or_jsonPath(txt)
 
+
 def valid_pycron_expr(txt):
     if validate_crontab_time_format_regex.match(txt):
         return True
     raise SchemaError('Bad crontab format: %s' % txt)
+
 
 def port_range(port):
     return 0 <= port <= 65535
