@@ -9,17 +9,16 @@ import jsonpath_ng
 from .expr import parse_expression
 import re
 
-
 # Regex for schedule config entries
 validate_crontab_time_format_regex = re.compile(
-        r"{0}\s+{1}\s+{2}\s+{3}\s+{4}".format(
-            r"(?P<minute>\*|[0-5]?\d)",
-            r"(?P<hour>\*|[01]?\d|2[0-3])",
-            r"(?P<day>\*|0?[1-9]|[12]\d|3[01])",
-            r"(?P<month>\*|0?[1-9]|1[012])",
-            r"(?P<day_of_week>\*|[0-6](\-[0-6])?)"
-        )  # end of str.format()
-    )  # end of re.compile()
+    r"{0}\s+{1}\s+{2}\s+{3}\s+{4}".format(
+        r"(?P<minute>\*|[0-5]?\d)",
+        r"(?P<hour>\*|[01]?\d|2[0-3])",
+        r"(?P<day>\*|0?[1-9]|[12]\d|3[01])",
+        r"(?P<month>\*|0?[1-9]|1[012])",
+        r"(?P<day_of_week>\*|[0-6](\-[0-6])?)"
+    )  # end of str.format()
+)  # end of re.compile()
 
 
 def json_path(txt):
