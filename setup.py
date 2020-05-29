@@ -3,7 +3,7 @@
 
 from setuptools import setup, find_packages
 
-requirements = ['PyYAML>=3.11', 'paho-mqtt>=1.0', 'influxdb', 'schema>=0.6.7', 'jsonpath-ng>=1.4.3']
+requirements = ['PyYAML>=3.11', 'paho-mqtt>=1.0', 'influxdb', 'schema>=0.6.7', 'jsonpath-ng>=1.4.3', 'pycron>=3.0.0', 'py_expression_eval>=0.3.9']
 
 setup(
     name='mqtt2influxdb',

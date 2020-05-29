@@ -33,3 +33,26 @@ points:
     httpcontent:
       frame: $.base64decoded.data.hex
       skipBytes: "1"
+  - measurement: hourly_temperature_fahrenheit
+    database: my_database
+    topic: node/+/thermometer/+/temperature
+    # Schedule support:
+    #         ┌───────────── minute (0 - 59)
+    #         │ ┌───────────── hour (0 - 23)
+    #         │ │ ┌───────────── day of month (1 - 31)
+    #         │ │ │ ┌───────────── month (1 - 12)
+    #         │ │ │ │ ┌───────────── day of week (0 - 6) (Sunday to Saturday;
+    #         │ │ │ │ │                                       7 is also Sunday on some systems)
+    #         │ │ │ │ │
+    #         │ │ │ │ │
+    #         * * * * *
+    schedule: 0 * * * *
+    # The formats currently supported are
+    #
+    #    */5 (for "every X" function),
+    #    4-10 (for time ranges),
+    #    6,8,23 (for a list of values),
+    #    * (for wildcard),
+    #    and of course a single number.
+    fields:
+      value: = 32 + ($.payload.data * 9 / 5)
