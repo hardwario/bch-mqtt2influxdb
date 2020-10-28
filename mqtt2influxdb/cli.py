@@ -16,12 +16,17 @@ def main():
     argp = argparse.ArgumentParser(description='MQTT to InfluxDB')
     argp.add_argument('-c', '--config', help='path to configuration file (YAML format)', required=True)
     argp.add_argument('-D', '--debug', help='print debug messages', action='store_true')
+    argp.add_argument('-o', '--output', help='output log messages to file')
     argp.add_argument('-t', '--test', help='test parse config', action='store_true')
     argp.add_argument('-d', '--daemon', help='on connection error instead of exiting just wait for some time and try again', action='store_true')
     argp.add_argument('-v', '--version', action='version', version='%(prog)s ' + __version__)
     args = argp.parse_args()
 
-    logging.basicConfig(level=logging.DEBUG if args.debug else logging.INFO, format=LOG_FORMAT)
+    log_file = None
+    if args.output:
+        log_file = args.output
+
+    logging.basicConfig(level=logging.DEBUG if args.debug else logging.INFO, format=LOG_FORMAT, filename=log_file)
 
     try:
         config = load_config(args.config)

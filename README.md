@@ -16,7 +16,7 @@ mqtt2influxdb -c /etc/bigclown/mqtt2influxdb.yaml --debug
 
 ## How to install & configure
 
-https://developers.hardwario.com/integrations/grafana-for-visualization#connect-mosquitto-and-influxdb
+https://developers.hardwario.com/tutorials/mqtt-to-influxdb
 
 ## License
 
