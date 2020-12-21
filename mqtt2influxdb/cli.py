@@ -5,6 +5,7 @@ import sys
 import argparse
 import logging
 from time import sleep
+from urllib3 import disable_warnings
 from .config import load_config
 from .mqtt2influxdb import Mqtt2InfluxDB
 
@@ -20,6 +21,7 @@ def main():
     argp.add_argument('-t', '--test', help='test parse config', action='store_true')
     argp.add_argument('-d', '--daemon', help='on connection error instead of exiting just wait for some time and try again', action='store_true')
     argp.add_argument('-v', '--version', action='version', version='%(prog)s ' + __version__)
+    argp.add_argument('-w', '--warnings', help='disable urllib3 TLS warnings if you are sure', action='store_true')
     args = argp.parse_args()
 
     log_file = None
@@ -30,6 +32,9 @@ def main():
 
     try:
         config = load_config(args.config)
+
+        if args.warnings:
+            disable_warnings()
 
         if args.test:
             print("The configuration file seems ok")
