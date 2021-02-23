@@ -148,6 +148,13 @@ class Mqtt2InfluxDB:
                                         logging.warning('invalid conversion function key')
                             else:
                                 val = self._get_value_from_str_or_JSONPath(point['fields'][key], msg)
+                                if key == 'value':
+                                    if isinstance(val, bool):
+                                        if 'type' in point['fields'] and point['fields']['type'] == 'booltoint':
+                                            val = int(val)
+                                elif key == 'type':
+                                    if val == 'booltoint':
+                                        val = 'int'
                             if val is None:
                                 logging.warning('Unable to get value for %s' % point['fields'][key])
                                 continue

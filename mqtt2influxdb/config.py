@@ -24,7 +24,7 @@ validate_crontab_time_format_regex = re.compile(
 def json_path(txt):
     try:
         return jsonpath_ng.parse(txt)
-    except Exception:
+    except Exception as e:
         raise SchemaError('Bad JsonPath format: %s' % txt)
 
 
