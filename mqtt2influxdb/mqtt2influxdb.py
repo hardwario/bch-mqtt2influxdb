@@ -97,7 +97,12 @@ class Mqtt2InfluxDB:
                     if payload == '':
                         payload = 'null'
                     try:
-                        payload = json.loads(payload)
+                        # convert to string
+                        if isinstance(payload, (bytes, bytearray)):
+                            payload.decode()
+                        # is it json?
+                        if payload.strip().startswith('{'):
+                            payload = json.loads(payload)
                     except Exception as e:
                         logging.error('parse json: %s topic: %s payload: %s', e, message.topic, message.payload)
                         return
