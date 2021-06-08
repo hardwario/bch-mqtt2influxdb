@@ -145,6 +145,8 @@ class Mqtt2InfluxDB:
                             if isinstance(point['fields'][key], dict):
                                 val = self._get_value_from_str_or_JSONPath(point['fields'][key]['value'], msg)
                                 convFunc = getattr(builtins, point['fields'][key]['type'], None)
+                                if val is None:
+                                    continue
                                 if convFunc:
                                     try:
                                         val = convFunc(val)
