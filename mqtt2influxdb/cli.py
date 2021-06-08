@@ -51,8 +51,7 @@ def main():
             logging.info('Suspending for 30 seconds')
             sleep(30)
     except Exception as e:
-        logging.error(e)
-        if os.getenv('DEBUG', False):
+        if args.debug or os.getenv('DEBUG', False):
             raise e
         sys.exit(1)
 

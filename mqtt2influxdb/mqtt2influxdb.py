@@ -14,6 +14,10 @@ import base64
 from requests.auth import HTTPBasicAuth
 import http.client as http_client
 import builtins
+import py_expression_eval
+import pycron
+from .expr import variable_to_jsonpath
+from .config import json_path
 
 
 class Mqtt2InfluxDB:
@@ -93,7 +97,12 @@ class Mqtt2InfluxDB:
                     if payload == '':
                         payload = 'null'
                     try:
-                        payload = json.loads(payload)
+                        # convert to string
+                        if isinstance(payload, (bytes, bytearray)):
+                            payload.decode()
+                        # is it json?
+                        if payload.strip().startswith('{'):
+                            payload = json.loads(payload)
                     except Exception as e:
                         logging.error('parse json: %s topic: %s payload: %s', e, message.topic, message.payload)
                         return
@@ -103,6 +112,11 @@ class Mqtt2InfluxDB:
                         "timestamp": message.timestamp,
                         "qos": message.qos
                     }
+                if 'schedule' in point:
+                    # check if current time is valid in schedule
+                    if not pycron.is_now(point['schedule']):
+                        logging.info('Skipping %s due to schedule %s' % (message.topic, point['schedule']))
+                        continue
 
                 measurement = self._get_value_from_str_or_JSONPath(point['measurement'], msg)
                 if measurement is None:
@@ -147,6 +161,7 @@ class Mqtt2InfluxDB:
                                     if val == 'booltoint':
                                         val = 'int'
                             if val is None:
+                                logging.warning('Unable to get value for %s' % point['fields'][key])
                                 continue
                             record['fields'][key] = val
                         if len(record['fields']) != len(point['fields']):
@@ -160,11 +175,12 @@ class Mqtt2InfluxDB:
                     for key in point['tags']:
                         val = self._get_value_from_str_or_JSONPath(point['tags'][key], msg)
                         if val is None:
+                            logging.warning('Unable to get value for tag %s' % point['tags'][key])
                             continue
                         record['tags'][key] = val
 
-                if len(record['tags']) != len(point['tags']):
-                    logging.warning('different number of tags')
+                    if len(record['tags']) != len(point['tags']):
+                        logging.warning('different number of tags')
 
                 logging.debug('influxdb write %s', record)
 
@@ -182,7 +198,7 @@ class Mqtt2InfluxDB:
                     if action:
                         r = action(url=self._config['http']['destination'], data=http_record, auth=HTTPBasicAuth(self._config['http']['username'], self._config['http']['password']))
                     else:
-                        print("Invalid HTTP method key!")
+                        logging.error("Invalid HTTP method key!")
 
     def _get_value_from_str_or_JSONPath(self, param, msg):
         if isinstance(param, str):
@@ -192,3 +208,19 @@ class Mqtt2InfluxDB:
             tmp = param.find(msg)
             if tmp:
                 return tmp[0].value
+
+        elif isinstance(param, py_expression_eval.Expression):
+            vars = {}
+            for var in param.variables():
+                # must start with JSON__
+                if var.startswith('JSON__'):
+                    json_field = variable_to_jsonpath(var)
+                    tmp = json_path(json_field).find(msg)
+                    if tmp:
+                        vars[var] = tmp[0].value
+                    else:
+                        logging.error('unable to find JSON field %s!' % json_field)
+                else:
+                    logging.error('unknown variable %s in parser expression %s!' % (var, param.toString()))
+            logging.debug('evaluating expression %s using the variables %s' % (param.toString(), str(vars)))
+            return param.evaluate(vars)
