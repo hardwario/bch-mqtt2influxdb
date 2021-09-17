@@ -8,8 +8,8 @@ from time import sleep
 from urllib3 import disable_warnings
 from .config import load_config
 from .mqtt2influxdb import Mqtt2InfluxDB
+from . import __version__
 
-__version__ = '@@VERSION@@'
 LOG_FORMAT = '%(asctime)s %(levelname)s: %(message)s'
 
 

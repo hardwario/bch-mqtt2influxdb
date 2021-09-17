@@ -1,23 +1,40 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
+import setuptools
+import os
+import re
+import codecs
 
-from setuptools import setup, find_packages
+here = os.path.abspath(os.path.dirname(__file__))
 
-requirements = ['PyYAML>=3.11', 'paho-mqtt>=1.0', 'influxdb', 'schema>=0.6.7', 'jsonpath-ng>=1.4.3', 'pycron>=3.0.0', 'py_expression_eval>=0.3.9']
 
-setup(
+def read(*parts):
+    with codecs.open(os.path.join(here, *parts), 'r') as fp:
+        return fp.read()
+
+
+def find_version(*file_paths):
+    version_file = read(*file_paths)
+    version_match = re.search(r"^__version__ = ['\"]([^'\"]*)['\"]",
+                              version_file, re.M)
+    if version_match:
+        return version_match.group(1)
+    raise RuntimeError("Unable to find version string.")
+
+
+setuptools.setup(
     name='mqtt2influxdb',
-    packages=["mqtt2influxdb"],
-    version='@@VERSION@@',
+    version=find_version('mqtt2influxdb', '__init__.py'),
     description='MQTT to InfluxDB',
     author='HARDWARIO s.r.o.',
-    author_email='karel.blavka@bigclown.com',
-    url='https://github.com/bigclownlabs/bch-mqtt2influxdb',
+    author_email='karel.blavka@hardwario.com',
+    url='https://github.com/hardwario/bch-mqtt2influxdb',
     include_package_data=True,
-    install_requires=requirements,
+    packages=setuptools.find_packages(),
+    long_description=read('README.md'),
+    long_description_content_type='text/markdown',
+    install_requires=read('requirements.txt'),
     license='MIT',
-    zip_safe=False,
-    keywords=['BigClown', 'mqtt', 'influxdb'],
+    keywords=['mqtt', 'influxdb', 'Hardwatio', 'TOWER', 'BigClown'],
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'License :: OSI Approved :: MIT License',
@@ -28,11 +45,9 @@ setup(
         'Topic :: Utilities',
         'Environment :: Console'
     ],
+    platforms='any',
     entry_points='''
         [console_scripts]
         mqtt2influxdb=mqtt2influxdb.cli:main
-    ''',
-    long_description='''
-BigClown tool for storage data from MQTT to InfluxDB
-'''
+    '''
 )
