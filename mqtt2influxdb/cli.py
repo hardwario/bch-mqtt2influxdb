@@ -6,7 +6,7 @@ import argparse
 import logging
 from time import sleep
 from urllib3 import disable_warnings
-from .config import load_config
+from .config import load_config, ConfigError
 from .mqtt2influxdb import Mqtt2InfluxDB
 from . import __version__
 
@@ -31,7 +31,7 @@ def main():
     logging.basicConfig(level=logging.DEBUG if args.debug else logging.INFO, format=LOG_FORMAT, filename=log_file)
 
     try:
-        config = load_config(args.config)
+        config = load_config(open(args.config, 'r'))
 
         if args.warnings:
             disable_warnings()
@@ -50,9 +50,13 @@ def main():
             logging.error(e)
             logging.info('Suspending for 30 seconds')
             sleep(30)
+
     except Exception as e:
         if args.debug or os.getenv('DEBUG', False):
             raise e
+        if isinstance(e, ConfigError):
+            print('Config error:')
+        print(e)
         sys.exit(1)
 
 
