@@ -19,6 +19,18 @@ mqtt2influxdb -c /etc/hardwario/mqtt2influxdb.yaml --debug
 
 https://tower.hardwario.com/en/latest/tutorials/mqtt-to-influxdb/
 
+## Local development
+
+for Linux
+```
+git clone git@github.com:hardwario/bch-mqtt2influxdb.git
+cd bch-mqtt2influxdb
+./test.sh
+. .venv/bin/activate
+python3 setup.py develop
+mqtt2influxdb -h
+```
+
 ## License
 
 This project is licensed under the [MIT License](https://opensource.org/licenses/MIT/) - see the [LICENSE](LICENSE) file for details.

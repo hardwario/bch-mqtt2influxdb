@@ -1,13 +1,17 @@
-#!/usr/bin/env python3
-
 import os
 import sys
 import logging
 import yaml
-from schema import Schema, And, Or, Use, Optional, SchemaError
-import jsonpath_ng
-from .expr import parse_expression
 import re
+import jsonpath_ng
+from io import IOBase
+from schema import Schema, And, Or, Use, Optional, SchemaError
+from .expr import parse_expression
+
+
+class ConfigError(Exception):
+    pass
+
 
 # Regex for schedule config entries
 validate_crontab_time_format_regex = re.compile(
@@ -100,13 +104,16 @@ schema = Schema({
 })
 
 
-def load_config(config_filename):
-    with open(config_filename, 'r') as f:
-        config = yaml.load(f, Loader=yaml.FullLoader)
+def load_config(config_file):
+    if isinstance(config_file, IOBase):
+        config = yaml.safe_load(config_file)
         try:
-            return schema.validate(config)
+            config = schema.validate(config)
         except SchemaError as e:
-            # Better error format
-            error = str(e).splitlines()
-            del error[1]
-            raise Exception(' '.join(error))
+            raise ConfigError(str(e))
+    elif config_file is None:
+        config = {}
+    else:
+        raise ConfigError('Unknown type config_file')
+
+    return config
