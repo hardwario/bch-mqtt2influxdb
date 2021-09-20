@@ -33,13 +33,6 @@ class Mqtt2InfluxDB:
                                                  config['influxdb'].get('password', 'root'),
                                                  ssl=config['influxdb'].get('ssl', False))
 
-        self._influxdb.create_database(config['influxdb']['database'])
-        self._influxdb.switch_database(config['influxdb']['database'])
-
-        for point in self._points:
-            if 'database' in point:
-                self._influxdb.create_database(point['database'])
-
         self._mqtt = paho.mqtt.client.Client()
 
         if config['mqtt'].get('username', None):
@@ -55,12 +48,22 @@ class Mqtt2InfluxDB:
         self._mqtt.on_disconnect = self._on_mqtt_disconnect
         self._mqtt.on_message = self._on_mqtt_message
 
-        logging.info('MQTT broker host: %s, port: %d, use tls: %s',
-                     config['mqtt']['host'],
-                     config['mqtt']['port'],
-                     bool(config['mqtt'].get('cafile', None)))
+    def run(self):
+        logging.debug('InfluxDB create database %s', self._config['influxdb']['database'])
+        self._influxdb.create_database(self._config['influxdb']['database'])
+        self._influxdb.switch_database(self._config['influxdb']['database'])
 
-        self._mqtt.connect_async(config['mqtt']['host'], config['mqtt']['port'], keepalive=10)
+        for point in self._points:
+            if 'database' in point:
+                logging.debug('InfluxDB create database %s', point['database'])
+                self._influxdb.create_database(point['database'])
+
+        logging.info('MQTT broker host: %s, port: %d, use tls: %s',
+                     self._config['mqtt']['host'],
+                     self._config['mqtt']['port'],
+                     bool(self._config['mqtt'].get('cafile', None)))
+
+        self._mqtt.connect_async(self._config['mqtt']['host'], self._config['mqtt']['port'], keepalive=10)
         self._mqtt.loop_forever()
 
     def _on_mqtt_connect(self, client, userdata, flags, rc):

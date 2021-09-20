@@ -41,7 +41,8 @@ def main():
             return
 
         try:
-            Mqtt2InfluxDB(config)
+            m2i = Mqtt2InfluxDB(config)
+            m2i.run()
         except KeyboardInterrupt:
             return
         except Exception as e:
