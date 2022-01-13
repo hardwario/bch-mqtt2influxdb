@@ -27,11 +27,23 @@ class Mqtt2InfluxDB:
         self._points = config['points']
         self._config = config
 
-        self._influxdb = influxdb.InfluxDBClient(config['influxdb']['host'],
-                                                 config['influxdb']['port'],
-                                                 config['influxdb'].get('username', 'root'),
-                                                 config['influxdb'].get('password', 'root'),
-                                                 ssl=config['influxdb'].get('ssl', False))
+        self._influxdb = influxdb.InfluxDBClient(
+            host=config['influxdb']['host'],
+            port=config['influxdb']['port'],
+            username=config['influxdb'].get('username', 'root'),
+            password=config['influxdb'].get('password', 'root'),
+            ssl=config['influxdb'].get('ssl', False),
+            verify_ssl=config['influxdb'].get('verify_ssl', False),
+            timeout=config['influxdb'].get('timeout', None),
+            retries=config['influxdb'].get('retries', 3),
+            use_udp=config['influxdb'].get('use_udp', False),
+            udp_port=config['influxdb'].get('udp_port', 4444),
+            proxies=config['influxdb'].get('proxies', None),
+            pool_size=config['influxdb'].get('pool_size', 10),
+            path=config['influxdb'].get('path', ''),
+            cert=config['influxdb'].get('cert', None),
+            gzip=config['influxdb'].get('gzip', False)
+        )
 
         self._mqtt = paho.mqtt.client.Client()
 
