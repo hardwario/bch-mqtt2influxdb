@@ -126,7 +126,7 @@ class Mqtt2InfluxDB:
                 try:
                     if 'timestamp' in payload.keys():
                         print("timestamp found in MQTT message... let's use this one....")
-                        timestamp = datetime.fromtimestamp(payload['timestamp'])
+                        timestamp = datetime.fromtimestamp(payload['timestamp']).strftime('%Y-%m-%dT%H:%M:%SZ')
                     else:
                         print("no timestamp in MQTT message..")
                 except:
