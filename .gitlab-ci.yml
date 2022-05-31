@@ -1,0 +1,4 @@
+include:
+- project: 'ci/templates'
+  file: '/tpl/docker-build.yml'
+
