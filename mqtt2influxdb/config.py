@@ -77,12 +77,10 @@ schema = Schema({
     },
 
     'influxdb': {
-        'host': And(str, len),
-        'port': And(int, port_range),
-        Optional('username'): And(str, len),
-        Optional('password'): And(str, len),
-        'database': And(str, len),
-        Optional('ssl'): bool
+        'url': And(str, len),
+        'bucket': And(str, len),
+        Optional('org'): str,
+        Optional('token'): str,
     },
     Optional("base64decode"): {
         'source': And(str, len, Use(str_or_jsonPath)),
