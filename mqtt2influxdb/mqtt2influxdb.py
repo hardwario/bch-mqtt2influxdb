@@ -7,12 +7,11 @@ import json
 from datetime import datetime
 import paho.mqtt.client
 from paho.mqtt.client import topic_matches_sub
-import influxdb
+import influxdb_client
 import jsonpath_ng
 import requests
 import base64
 from requests.auth import HTTPBasicAuth
-import http.client as http_client
 import builtins
 import py_expression_eval
 import pycron
@@ -27,11 +26,12 @@ class Mqtt2InfluxDB:
         self._points = config['points']
         self._config = config
 
-        self._influxdb = influxdb.InfluxDBClient(config['influxdb']['host'],
-                                                 config['influxdb']['port'],
-                                                 config['influxdb'].get('username', 'root'),
-                                                 config['influxdb'].get('password', 'root'),
-                                                 ssl=config['influxdb'].get('ssl', False))
+        self._influxdb = influxdb_client.InfluxDBClient(url=config['influxdb']['url'],
+                                                 token=config['influxdb'].get('token', None),
+                                                 org=config['influxdb'].get('org', 'influxdata'),
+                                                 )
+        self._influxdb_write_api = self._influxdb.write_api()
+        self._influxdb_bucket = config['influxdb']['bucket']
 
         self._mqtt = paho.mqtt.client.Client()
 
@@ -49,15 +49,6 @@ class Mqtt2InfluxDB:
         self._mqtt.on_message = self._on_mqtt_message
 
     def run(self):
-        logging.debug('InfluxDB create database %s', self._config['influxdb']['database'])
-        self._influxdb.create_database(self._config['influxdb']['database'])
-        self._influxdb.switch_database(self._config['influxdb']['database'])
-
-        for point in self._points:
-            if 'database' in point:
-                logging.debug('InfluxDB create database %s', point['database'])
-                self._influxdb.create_database(point['database'])
-
         logging.info('MQTT broker host: %s, port: %d, use tls: %s',
                      self._config['mqtt']['host'],
                      self._config['mqtt']['port'],
@@ -185,7 +176,13 @@ class Mqtt2InfluxDB:
 
                 logging.debug('influxdb write %s', record)
 
-                self._influxdb.write_points([record], database=point.get('database', None))
+                point = influxdb_client.Point(record['measurement'])
+                for tag_name, tag_value in record['tags'].items():
+                    point.tag(tag_name, tag_value)
+                for field_name, field_value in record['fields'].items():
+                    point.field(field_name, field_value)
+
+                self._influxdb_write_api.write(bucket=self._influxdb_bucket, record=point)
 
                 if 'http' in self._config:
                     http_record = {}
