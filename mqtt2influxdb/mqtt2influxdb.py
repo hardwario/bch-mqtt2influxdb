@@ -134,14 +134,14 @@ class Mqtt2InfluxDB:
                     logging.warning('unknown measurement')
                     return
 
-                timestamp =  datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ')
+                timestamp = datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ')
                 try:
                     if 'timestamp' in payload.keys():
                         print("timestamp found in MQTT message... let's use this one....")
                         timestamp = datetime.fromtimestamp(payload['timestamp']).strftime('%Y-%m-%dT%H:%M:%SZ')
                     else:
                         print("no timestamp in MQTT message..")
-                except:
+                except Exception:
                     print("some error while trying to read time from mqtt message.... let's ignore, and use the current timestamp")
 
                 record = {'measurement': measurement,
