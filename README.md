@@ -15,6 +15,10 @@
 mqtt2influxdb -c /etc/hardwario/mqtt2influxdb.yaml --debug
 ```
 
+### Using docker
+`mqtt2influxdb` can also be run inside docker using docker-compose or a kubernetes cluster. By default, the configuration file is expected to be
+present in `/config/config.yml` (you can mount it using a volume, a ConfigMap, or by overriding the image).
+
 ## How to install & configure
 
 https://tower.hardwario.com/en/latest/tutorials/mqtt-to-influxdb/
