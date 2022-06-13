@@ -41,4 +41,4 @@ This project is licensed under the [MIT License](https://opensource.org/licenses
 
 ---
 
-Made with &#x2764;&nbsp; by [**HARDWARIO s.r.o.**](https://www.hardwario.com/) in the heart of Europe.
+Made with &#x2764;&nbsp; by [**HARDWARIO a.s.**](https://www.hardwario.com/) in the heart of Europe.
