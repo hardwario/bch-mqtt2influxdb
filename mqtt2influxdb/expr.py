@@ -11,7 +11,7 @@ def jsonpath_to_variable(p):
 def variable_to_jsonpath(p):
     """Converts a expression variable into a valid JSON path starting with $."""
     # replace JSON_ with $ and _ with .
-    return p.var.replace('JSON_', '$').replace('_', '.')
+    return p.replace('JSON_', '$').replace('_', '.')
 
 
 def parse_expression(txt):
